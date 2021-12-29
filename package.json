@@ -1,0 +1,85 @@
+{
+  "name": "v-datetime-picker",
+  "version": "1.0.0",
+  "description": "Vuetify datetime picker with input fields",
+  "author": "Komarov Roman <rom541997@gmail.com>",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --skip-plugins vuetify --target lib --dest lib ./plugin/index.ts",
+    "lint": "eslint src test",
+    "clean": "rimraf lib",
+    "cover": "nyc --check-coverage npm run test:only",
+    "test": "npm run lint && npm run cover",
+    "test:examples": "node examples/",
+    "test:only": "mocha --require babel-core/register --require babel-polyfill --recursive",
+    "test:prod": "cross-env BABEL_ENV=production npm run test",
+    "test:watch": "npm test -- --watch"
+  },
+  "main": "lib/v-datetime-picker.common.js",
+  "module": "lib/v-datetime-picker.umd.js",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "@vue/cli-plugin-babel": "^4.5.14",
+    "@vue/cli-plugin-eslint": "^4.5.14",
+    "@vue/cli-plugin-typescript": "^4.5.14",
+    "@vue/cli-service": "^4.5.14",
+    "@vue/compiler-sfc": "^3.2.20",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-vue": "^7.20.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^2.4.1",
+    "pug": "^3.0.2",
+    "pug-plain-loader": "^1.1.0",
+    "rimraf": "^2.6.2",
+    "sass": "~1.32.6",
+    "sass-loader": "^10.2.0",
+    "typescript": "^4.4.4",
+    "vee-validate": "^3.4.14",
+    "vue": "^2.6.14",
+    "vue-cli-plugin-vuetify": "~2.4.3",
+    "vue-i18n": "^8.26.8",
+    "vue-template-compiler": "^2.6.14",
+    "vuetify": "^2.6.1",
+    "eslint-config-prettier": "^6.0.0",
+    "vuetify-loader": "^1.7.0"
+  },
+  "bugs": {
+    "url": "https://github.com/hastes/v-datetime-picker/issues"
+  },
+  "engines": {
+    "node": ">= 16.12 <17"
+  },
+  "homepage": "https://github.com/hastes/v-datetime-picker#readme",
+  "keywords": [
+    "fetch",
+    "api",
+    "datatable",
+    "vuetify",
+    "npm",
+    "module",
+    "javascript"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hastes/v-datetime-picker.git"
+  },
+  "volta": {
+    "node": "16.12.0"
+  },
+  "peerDependencies": {
+    "date-fns": "^2",
+    "vuetify": "^2"
+  },
+  "dependencies": {
+    "vue-the-mask": "^0.11.1"
+  }
+}
