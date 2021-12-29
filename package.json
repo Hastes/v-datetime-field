@@ -1,6 +1,6 @@
 {
-  "name": "v-datetime-picker",
-  "version": "1.0.0",
+  "name": "v-datatime",
+  "version": "1.0.1",
   "description": "Vuetify datetime picker with input fields",
   "author": "Komarov Roman <rom541997@gmail.com>",
   "scripts": {
@@ -15,8 +15,8 @@
     "test:prod": "cross-env BABEL_ENV=production npm run test",
     "test:watch": "npm test -- --watch"
   },
-  "main": "lib/v-datetime-picker.common.js",
-  "module": "lib/v-datetime-picker.umd.js",
+  "main": "lib/v-datatime.common.js",
+  "module": "lib/v-datatime.umd.js",
   "files": [
     "lib"
   ],
@@ -32,6 +32,7 @@
     "@vue/eslint-config-typescript": "^7.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-vue": "^7.20.0",
     "pluralize": "^8.0.0",
@@ -48,16 +49,15 @@
     "vue-i18n": "^8.26.8",
     "vue-template-compiler": "^2.6.14",
     "vuetify": "^2.6.1",
-    "eslint-config-prettier": "^6.0.0",
     "vuetify-loader": "^1.7.0"
   },
   "bugs": {
-    "url": "https://github.com/hastes/v-datetime-picker/issues"
+    "url": "https://github.com/hastes/v-datatime/issues"
   },
   "engines": {
     "node": ">= 16.12 <17"
   },
-  "homepage": "https://github.com/hastes/v-datetime-picker#readme",
+  "homepage": "https://github.com/hastes/v-datatime#readme",
   "keywords": [
     "fetch",
     "api",
@@ -70,7 +70,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hastes/v-datetime-picker.git"
+    "url": "git+https://github.com/hastes/v-datatime.git"
   },
   "volta": {
     "node": "16.12.0"
