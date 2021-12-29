@@ -1,6 +1,6 @@
 {
-  "name": "v-datetime",
-  "version": "1.0.1",
+  "name": "v-datetime-field",
+  "version": "1.0.0",
   "description": "Vuetify datetime picker with input fields",
   "author": "Komarov Roman <rom541997@gmail.com>",
   "scripts": {
@@ -15,8 +15,8 @@
     "test:prod": "cross-env BABEL_ENV=production npm run test",
     "test:watch": "npm test -- --watch"
   },
-  "main": "lib/v-datetime.common.js",
-  "module": "lib/v-datetime.umd.js",
+  "main": "lib/v-datetime-field.common.js",
+  "module": "lib/v-datetime-field.umd.js",
   "files": [
     "lib"
   ],
@@ -52,12 +52,12 @@
     "vuetify-loader": "^1.7.0"
   },
   "bugs": {
-    "url": "https://github.com/hastes/v-datetime/issues"
+    "url": "https://github.com/hastes/v-datetime-field/issues"
   },
   "engines": {
     "node": ">= 16.12 <17"
   },
-  "homepage": "https://github.com/hastes/v-datetime#readme",
+  "homepage": "https://github.com/hastes/v-datetime-field#readme",
   "keywords": [
     "fetch",
     "api",
@@ -70,7 +70,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hastes/v-datetime.git"
+    "url": "git+https://github.com/hastes/v-datetime-field.git"
   },
   "volta": {
     "node": "16.12.0"

@@ -9,7 +9,7 @@ import {
   VTextField,
 } from 'vuetify/lib';
 
-import DatetimePicker from './VDatetimePicker/index.vue';
+import DatetimeField from './VDatetimeField/index.vue';
 
 Vue.component('VBtn', VBtn);
 Vue.component('VMenu', VMenu);
@@ -18,12 +18,12 @@ Vue.component('VDatePicker', VDatePicker);
 Vue.component('VTextField', VTextField);
 Vue.component('VSpacer', VSpacer);
 
-class VDatetimePickerPlugin {
+class VDatetimeFieldPlugin {
   public install(Vue: VueConstructor): void {
-    Vue.component('VDatetimePicker', DatetimePicker);
+    Vue.component('VDatetimeField', DatetimeField);
   }
 }
 
-export const VDatetimePicker = DatetimePicker;
+export const VDatetimeField = DatetimeField;
 
-export default new VDatetimePickerPlugin();
+export default new VDatetimeFieldPlugin();

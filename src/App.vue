@@ -2,8 +2,8 @@
   v-app
     v-main
       v-container
-        h1 v-datetime
-        v-datetime.mt-7(
+        h1 v-datetime-field
+        v-datetime-field.mt-7(
           v-model="date"
           only-date
           solo

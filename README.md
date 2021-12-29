@@ -1,14 +1,14 @@
-# Vuetify plugin VApiDatatable
+# Vuetify plugin VDatetimeField
 
 <p align="center">
-  <a href="https://npmcharts.com/compare/v-datetime?minimal=true">
-    <img src="http://img.shields.io/npm/dm/v-datetime.svg">
+  <a href="https://npmcharts.com/compare/v-datetime-field?minimal=true">
+    <img src="http://img.shields.io/npm/dm/v-datetime-field.svg">
   </a>
-  <a href="https://www.npmjs.org/package/v-datetime">
-    <img src="https://img.shields.io/npm/v/v-datetime.svg">
+  <a href="https://www.npmjs.org/package/v-datetime-field">
+    <img src="https://img.shields.io/npm/v/v-datetime-field.svg">
   </a>
-  <a href="http://img.badgesize.io/https://unpkg.com/v-datetime/lib/v-datetime.umd.js?compression=gzip&label=gzip">
-    <img src="http://img.badgesize.io/https://unpkg.com/v-datetime/lib/v-datetime.umd.js?compression=gzip&label=gzip">
+  <a href="http://img.badgesize.io/https://unpkg.com/v-datetime-field/lib/v-datetime-field.umd.js?compression=gzip&label=gzip">
+    <img src="http://img.badgesize.io/https://unpkg.com/v-datetime-field/lib/v-datetime-field.umd.js?compression=gzip&label=gzip">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg">
@@ -23,7 +23,7 @@
 
 # Features
 
-### VApiDatatable
+### VDatetimeField
 
 * **Input** - You can input date and time via keyboard
 * **Use separately** - You can use only datepicker or only timepicker 
@@ -38,21 +38,21 @@
 
 ### Install package
 ```shell
-npm install --save v-datetime
+npm install --save v-datetime-field
 ```
 or
 ```shell
-yarn add v-datetime
+yarn add v-datetime-field
 ```
 
 ### Local
 `component.vue`
 ```vue
 <script>
-import { VDatetimePicker } from 'v-datetime'
+import { VDatetimeField } from 'v-datetime-field'
 
 export default {
-  components: { VDatetimePicker },
+  components: { VDatetimeField },
 }
 </script>
 ```
@@ -61,9 +61,9 @@ export default {
 `main.js`
 ```javascript
 import Vue from 'vue'
-import VDatetimePicker from 'v-datetime'
+import VDatetimeField from 'v-datetime-field'
 
-Vue.use(VDatetimePicker)
+Vue.use(VDatetimeField)
 ```
 
 # Props
