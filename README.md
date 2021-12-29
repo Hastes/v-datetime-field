@@ -18,7 +18,7 @@
 **Vuetify datetime picker with input fields** 📅
 
 <p align="center">
-<!-- <img width="600px" src="https://s10.gifyu.com/images/Screen-Recording-2021-12-06-at-12.58.11-1.gif"/> -->
+<img width="600px" src="https://s10.gifyu.com/images/ezgif.com-gif-maker80d71365df2e0ced.gif"/>
 </p>
 
 # Features
@@ -49,10 +49,10 @@ yarn add v-datetime-field
 `component.vue`
 ```vue
 <script>
-import { VDatetimeField } from 'v-datetime-field'
+import { VDatetimePicker } from 'v-datetime-field'
 
 export default {
-  components: { VDatetimeField },
+  components: { VDatetimePicker },
 }
 </script>
 ```
@@ -61,9 +61,9 @@ export default {
 `main.js`
 ```javascript
 import Vue from 'vue'
-import VDatetimeField from 'v-datetime-field'
+import VDatetimePicker from 'v-datetime-field'
 
-Vue.use(VDatetimeField)
+Vue.use(VDatetimePicker)
 ```
 
 # Props
