@@ -59,12 +59,10 @@
   },
   "homepage": "https://github.com/hastes/v-datetime-field#readme",
   "keywords": [
-    "fetch",
-    "api",
-    "datatable",
+    "timepicker",
+    "datepicker",
     "vuetify",
-    "npm",
-    "module",
+    "vue",
     "javascript"
   ],
   "license": "MIT",

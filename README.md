@@ -75,6 +75,8 @@ Vue.use(VDatetimePicker)
 | only-date      | `boolean`  | `False`        | --       | Use only datepicker           |
 | only-time      | `boolean`  | `False`        | --       | Use only timepicker           |
 
+And includes all v-text-field props e.g. outlined, depressed, etc.
+
 
 
 ## Roadmap
