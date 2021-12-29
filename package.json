@@ -1,6 +1,6 @@
 {
   "name": "v-datetime-field",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Vuetify datetime picker with input fields",
   "author": "Komarov Roman <rom541997@gmail.com>",
   "scripts": {
