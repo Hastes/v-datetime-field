@@ -1,14 +1,14 @@
 # Vuetify plugin VApiDatatable
 
 <p align="center">
-  <a href="https://npmcharts.com/compare/v-datatime?minimal=true">
-    <img src="http://img.shields.io/npm/dm/v-datatime.svg">
+  <a href="https://npmcharts.com/compare/v-datetime?minimal=true">
+    <img src="http://img.shields.io/npm/dm/v-datetime.svg">
   </a>
-  <a href="https://www.npmjs.org/package/v-datatime">
-    <img src="https://img.shields.io/npm/v/v-datatime.svg">
+  <a href="https://www.npmjs.org/package/v-datetime">
+    <img src="https://img.shields.io/npm/v/v-datetime.svg">
   </a>
-  <a href="http://img.badgesize.io/https://unpkg.com/v-datatime/lib/v-datatime.umd.js?compression=gzip&label=gzip">
-    <img src="http://img.badgesize.io/https://unpkg.com/v-datatime/lib/v-datatime.umd.js?compression=gzip&label=gzip">
+  <a href="http://img.badgesize.io/https://unpkg.com/v-datetime/lib/v-datetime.umd.js?compression=gzip&label=gzip">
+    <img src="http://img.badgesize.io/https://unpkg.com/v-datetime/lib/v-datetime.umd.js?compression=gzip&label=gzip">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg">
@@ -38,18 +38,18 @@
 
 ### Install package
 ```shell
-npm install --save v-datatime
+npm install --save v-datetime
 ```
 or
 ```shell
-yarn add v-datatime
+yarn add v-datetime
 ```
 
 ### Local
 `component.vue`
 ```vue
 <script>
-import { VDatetimePicker } from 'v-datatime'
+import { VDatetimePicker } from 'v-datetime'
 
 export default {
   components: { VDatetimePicker },
@@ -61,7 +61,7 @@ export default {
 `main.js`
 ```javascript
 import Vue from 'vue'
-import VDatetimePicker from 'v-datatime'
+import VDatetimePicker from 'v-datetime'
 
 Vue.use(VDatetimePicker)
 ```
