@@ -49,10 +49,10 @@ yarn add v-datetime-field
 `component.vue`
 ```vue
 <script>
-import { VDatetimePicker } from 'v-datetime-field'
+import { VDatetimeField } from 'v-datetime-field'
 
 export default {
-  components: { VDatetimePicker },
+  components: { VDatetimeField },
 }
 </script>
 ```
@@ -61,9 +61,9 @@ export default {
 `main.js`
 ```javascript
 import Vue from 'vue'
-import VDatetimePicker from 'v-datetime-field'
+import VDatetimeField from 'v-datetime-field'
 
-Vue.use(VDatetimePicker)
+Vue.use(VDatetimeField)
 ```
 
 # Props
