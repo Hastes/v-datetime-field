@@ -5,9 +5,9 @@
         h1 v-datetime-field
         v-datetime-field.mt-7(
           v-model="date"
-          only-date
           solo
           outlined
+          :error-messages="['dsds']"
         )
 </template>
 
