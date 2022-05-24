@@ -1,75 +1,78 @@
 <template lang="pug">
-  .v-datetime-field
-    .d-flex
-      .v-datetime-field__date(v-if="!onlyTime")
-        v-menu(
-          v-model="date.menu"
-          v-bind="MENU_CONF"
-        )
-          template(v-slot:activator="{ on }")
-            v-text-field(
-              v-model="date.textField"
-              :label="labelDate"
-              append-icon="mdi-calendar"
-              v-bind="$attrs"
-              v-on="on"
-              type="text"
-              v-mask="'##.##.####'"
-              placeholder="__.__.____"
-              persistent-placeholder
-              :error-messages="date.validate.success ? [] : ['Дата введена неверно']"
-              @click:append="openDate"
-              @click:clear="date.textField = null"
-              @keyup.enter="timeFocus"
-              @keydown.tab="timeFocus"
-              @focus="openDate"
-              @input="openDate"
-            )
-          v-date-picker(
-            v-model="date.picker"
-            no-title
-            scrollable
-            @input="date.menu = false"
-            @click:date="timeFocus"
+  v-input.d-flex(v-bind="commonAttrs")
+    .v-datetime-field__date(v-if="!onlyTime")
+      v-menu(
+        v-model="date.menu"
+        v-bind="MENU_CONF"
+      )
+        template(v-slot:activator="{ on }")
+          v-text-field(
+            v-model="date.textField"
+            :label="labelDate"
+            append-icon="mdi-calendar"
+            v-bind="$attrs"
+            v-on="on"
+            type="text"
+            v-mask="'##.##.####'"
+            placeholder="__.__.____"
+            persistent-placeholder
+            hide-details
+            @click:append="openDate"
+            @click:clear="date.textField = null"
+            @keyup.enter="timeFocus"
+            @keydown.tab="timeFocus"
+            @focus="openDate"
+            @input="openDate"
           )
-            v-spacer
-            v-btn(text color="primary" @click="date.menu = false") Отмена
+        v-date-picker(
+          v-model="date.picker"
+          no-title
+          scrollable
+          @input="date.menu = false"
+          @click:date="timeFocus"
+        )
+          v-spacer
+          v-btn(text color="primary" @click="date.menu = false") Отмена
 
-      .v-datetime-field__time(v-if="!onlyDate")
-        v-menu(
-          v-model="time.menu"
-          v-bind="MENU_CONF"
-        )
-          template(v-slot:activator="{ on }")
-            v-text-field(
-              ref="timePickerInput"
-              v-model="time.textField"
-              v-bind="$attrs"
-              v-on="on"
-              :label="labelTime"
-              append-icon="mdi-clock"
-              type="text"
-              v-mask="'##:##'"
-              placeholder="__:__"
-              persistent-placeholder
-              :class="{ 'ml-2': !onlyTime }"
-              :error-messages="time.validate.success ? [] : ['Время введено неверно']"
-              @click:append="openTime"
-              @click:clear="time.textField = null"
-              @keyup.enter="time.menu = false"
-              @focus="openTime"
-              @input="openTime"
-            )
-          v-time-picker(
-            :value="time.picker.value"
-            format="24hr"
-            @change="setTimePickerValue"
-            @click:hour="setTimePickerValue"
+    .v-datetime-field__time(v-if="!onlyDate")
+      v-menu(
+        v-model="time.menu"
+        v-bind="MENU_CONF"
+      )
+        template(v-slot:activator="{ on }")
+          v-text-field(
+            ref="timePickerInput"
+            v-model="time.textField"
+            v-bind="$attrs"
+            v-on="on"
+            :label="labelTime"
+            append-icon="mdi-clock"
+            type="text"
+            v-mask="'##:##'"
+            placeholder="__:__"
+            persistent-placeholder
+            :class="{ 'ml-2': !onlyTime }"
+            hide-details
+            @click:append="openTime"
+            @click:clear="time.textField = null"
+            @keyup.enter="time.menu = false"
+            @focus="openTime"
+            @input="openTime"
           )
-            v-spacer
-            v-btn(text color="primary" @click="time.menu = false") Отмена
-    .v-datetime-field__error-messages(v-if="$attrs['error-messages']")
-      p.caption.error--text.ml-2 {{ $attrs['error-messages'].join() }}
+        v-time-picker(
+          :value="time.picker.value"
+          format="24hr"
+          @change="setTimePickerValue"
+          @click:hour="setTimePickerValue"
+        )
+          v-spacer
+          v-btn(text color="primary" @click="time.menu = false") Отмена
+
+    template(
+      v-for="(_, name) in $scopedSlots"
+      v-slot:[name]="data"
+    )
+      slot(:name="name" v-bind="data")
 </template>
 
 <script>
@@ -128,8 +131,18 @@ export default {
     };
   },
   computed: {
-    genericAttrs() {
-      return { ...this.$attrs, 'error-messages': [] };
+    commonAttrs() {
+      const { $attrs } = this || {};
+      const localDatetimeErrors = [];
+      if (!this.date.validate.success) localDatetimeErrors.push('Дата введена неверно');
+      if (!this.time.validate.success) localDatetimeErrors.push('Время введено неверно');
+      return {
+        ...$attrs,
+        'error-messages': [
+          ...($attrs['error-messages'] || []),
+          ...localDatetimeErrors,
+        ],
+      };
     },
   },
   watch: {
