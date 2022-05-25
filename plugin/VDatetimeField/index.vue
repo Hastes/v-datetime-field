@@ -1,5 +1,10 @@
 <template lang="pug">
-  v-input.d-flex(v-bind="commonAttrs")
+  v-input.d-flex(
+    ref="v-datetime-field"
+    v-model="outputValue"
+    v-bind="commonAttrs"
+    :error-count="commonAttrs['error-messages'].length"
+  )
     .v-datetime-field__date(v-if="!onlyTime")
       v-menu(
         v-model="date.menu"
@@ -23,6 +28,7 @@
             @keydown.tab="timeFocus"
             @focus="openDate"
             @input="openDate"
+            @blur="emitValue"
           )
         v-date-picker(
           v-model="date.picker"
@@ -58,6 +64,7 @@
             @keyup.enter="time.menu = false"
             @focus="openTime"
             @input="openTime"
+            @blur="emitValue"
           )
         v-time-picker(
           :value="time.picker.value"
@@ -131,6 +138,27 @@ export default {
     };
   },
   computed: {
+    outputValue() {
+      let val = null;
+
+      if (!this.date.picker) {
+        val = this.time.picker.value;
+      }
+
+      if (!this.time.picker.value) {
+        val = this.date.picker;
+      }
+
+      if (!this.onlyDate && !this.onlyTime) {
+        val = null;
+
+        if (this.date.picker && this.time.picker.value) {
+          val = `${this.date.picker} ${this.time.picker.value}`;
+        }
+      }
+
+      return val;
+    },
     commonAttrs() {
       const { $attrs } = this || {};
       const localDatetimeErrors = [];
@@ -176,6 +204,9 @@ export default {
       },
       immediate: true,
     },
+    outputValue: function (val) {
+      this.emitValue();
+    },
     'date.picker': {
       handler(val) {
         let date = null;
@@ -185,7 +216,6 @@ export default {
         }
 
         this.date.textField = date;
-        this.emitValue();
       },
       immediate: true,
     },
@@ -205,7 +235,6 @@ export default {
         if (this.time.picker.fullfilled) {
           this.time.textField = val;
         }
-        this.emitValue();
       },
       immediate: true,
     },
@@ -264,17 +293,8 @@ export default {
       }
     },
     emitValue() {
-      let val = `${this.date.picker} ${this.time.picker.value}`;
-      if (!this.date.picker) {
-        val = this.time.picker.value;
-      }
-
-      if (!this.time.picker.value) {
-        val = this.date.picker;
-      }
-
-      this.$emit('blur', val);
-      this.$emit('input', val);
+      this.$emit('blur', this.outputValue);
+      this.$emit('input', this.outputValue);
     },
     openDate() {
       if (this.date.validate.success) {
