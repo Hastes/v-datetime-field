@@ -3,19 +3,39 @@
     v-main
       v-container
         h1 v-datetime-field
-        validation-observer(ref="obs")
-          validation-provider(
-            name="date"
-            key="date"
-            vid="date"
-            rules="required"
-            v-slot="{ errors }"
-          )
-            v-datetime-field.mt-7(
-              v-model="formData['date']"
-              outlined
-              :error-messages="errors"
+        div.mt-7
+          validation-observer(ref="obs")
+            validation-provider(
+              name="text"
+              key="text"
+              vid="text"
+              rules="required"
+              v-slot="{ errors }"
             )
+              v-text-field(
+                v-model="formData['text']"
+                label="Test Text"
+                outlined
+                :error-messages="errors"
+              )
+            validation-provider(
+              name="date"
+              key="date"
+              vid="date"
+              rules="required"
+              v-slot="{ errors }"
+            )
+              v-datetime-field(
+                v-model="formData['date']"
+                outlined
+                :error-messages="errors"
+              )
+
+            v-btn(
+              color="primary"
+              depressed
+              @click="reset"
+            ) Сбросить
 </template>
 
 <script>
@@ -36,6 +56,12 @@ export default {
     return {
       formData: {},
     };
+  },
+  methods: {
+    reset() {
+      this.formData = {};
+      this.$refs.obs.reset();
+    },
   },
 };
 </script>

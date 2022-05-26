@@ -173,30 +173,29 @@ export default {
   watch: {
     value: {
       handler(val) {
-        const datetime = val && val.split(' ').map((i) => ({ value: i, isTime: i.includes(':') }));
-        if (datetime) {
-          if (datetime.length === 2) {
-            const [date, time] = datetime;
-            this.date.picker = date.value;
+        const datetime = val && val.split(' ').map((i) => ({ value: i, isTime: i.includes(':') })) || [];
+
+        if (datetime.length === 2) {
+          const [date, time] = datetime;
+          this.date.picker = date.value;
+          this.time.picker = {
+            value: time.value,
+            fullfilled: true,
+          };
+        } else if (datetime.length === 1) {
+          const [firstVal] = datetime;
+          if (firstVal.isTime) {
             this.time.picker = {
-              value: time.value,
+              value: firstVal.value,
               fullfilled: true,
             };
-          } else if (datetime.length === 1) {
-            const [firstVal] = datetime;
-            if (firstVal.isTime) {
-              this.time.picker = {
-                value: firstVal.value,
-                fullfilled: true,
-              };
-            } else this.date.picker = firstVal.value;
-          } else {
-            this.date.picker = null;
-            this.time.picker = {
-              value: null,
-              fullfilled: false,
-            };
-          }
+          } else this.date.picker = firstVal.value;
+        } else {
+          this.date.picker = null;
+          this.time.picker = {
+            value: null,
+            fullfilled: false,
+          };
         }
       },
       immediate: true,
@@ -229,9 +228,7 @@ export default {
     },
     'time.picker.value': {
       handler(val) {
-        if (this.time.picker.fullfilled) {
-          this.time.textField = val;
-        }
+        this.time.textField = val;
       },
       immediate: true,
     },
@@ -290,7 +287,6 @@ export default {
       }
     },
     emitValue() {
-      this.$emit('blur', this.outputValue);
       this.$emit('input', this.outputValue);
     },
     openDate() {
