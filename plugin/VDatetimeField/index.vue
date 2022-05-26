@@ -1,79 +1,76 @@
 <template lang="pug">
-  v-input.d-flex(
-    ref="v-datetime-field"
-    v-model="outputValue"
+  v-input.v-datetime-field(
     v-bind="commonAttrs"
     :error-count="commonAttrs['error-messages'].length"
   )
-    .v-datetime-field__date(v-if="!onlyTime")
-      v-menu(
-        v-model="date.menu"
-        v-bind="MENU_CONF"
-      )
-        template(v-slot:activator="{ on }")
-          v-text-field(
-            v-model="date.textField"
-            :label="labelDate"
-            append-icon="mdi-calendar"
-            v-bind="$attrs"
-            v-on="on"
-            type="text"
-            v-mask="'##.##.####'"
-            placeholder="__.__.____"
-            persistent-placeholder
-            hide-details
-            @click:append="openDate"
-            @click:clear="date.textField = null"
-            @keyup.enter="timeFocus"
-            @keydown.tab="timeFocus"
-            @focus="openDate"
-            @input="openDate"
-            @blur="emitValue"
-          )
-        v-date-picker(
-          v-model="date.picker"
-          no-title
-          scrollable
-          @input="date.menu = false"
-          @click:date="timeFocus"
+    .v-datetime-field__wrapper
+      .v-datetime-field__date(v-if="!onlyTime")
+        v-menu(
+          v-model="date.menu"
+          v-bind="MENU_CONF"
         )
-          v-spacer
-          v-btn(text color="primary" @click="date.menu = false") Отмена
+          template(v-slot:activator="{ on }")
+            v-text-field(
+              v-model="date.textField"
+              :label="labelDate"
+              append-icon="mdi-calendar"
+              v-bind="$attrs"
+              v-on="on"
+              type="text"
+              v-mask="'##.##.####'"
+              placeholder="__.__.____"
+              hide-details
+              @click:append="openDate"
+              @click:clear="date.textField = null"
+              @keyup.enter="timeFocus"
+              @keydown.tab="timeFocus"
+              @focus="openDate"
+              @input="openDate"
+              @blur="emitValue"
+            )
+          v-date-picker(
+            v-model="date.picker"
+            no-title
+            scrollable
+            @input="date.menu = false"
+            @click:date="timeFocus"
+          )
+            v-spacer
+            v-btn(text color="primary" @click="date.menu = false") Отмена
 
-    .v-datetime-field__time(v-if="!onlyDate")
-      v-menu(
-        v-model="time.menu"
-        v-bind="MENU_CONF"
-      )
-        template(v-slot:activator="{ on }")
-          v-text-field(
-            ref="timePickerInput"
-            v-model="time.textField"
-            v-bind="$attrs"
-            v-on="on"
-            :label="labelTime"
-            append-icon="mdi-clock"
-            type="text"
-            v-mask="'##:##'"
-            placeholder="__:__"
-            persistent-placeholder
-            :class="{ 'ml-2': !onlyTime }"
-            hide-details
-            @click:append="openTime"
-            @click:clear="time.textField = null"
-            @keyup.enter="time.menu = false"
-            @focus="openTime"
-            @input="openTime"
-            @blur="emitValue"
-          )
-        v-time-picker(
-          :value="time.picker.value"
-          format="24hr"
-          @change="setTimePickerValue"
-          @click:hour="setTimePickerValue"
+      .v-datetime-field__time(v-if="!onlyDate")
+        v-menu(
+          v-model="time.menu"
+          v-bind="MENU_CONF"
         )
-          v-spacer
-          v-btn(text color="primary" @click="time.menu = false") Отмена
+          template(v-slot:activator="{ on }")
+            v-text-field(
+              ref="timePickerInput"
+              v-model="time.textField"
+              v-bind="$attrs"
+              v-on="on"
+              :label="labelTime"
+              append-icon="mdi-clock"
+              type="text"
+              v-mask="'##:##'"
+              placeholder="__:__"
+              :class="{ 'ml-2': !onlyTime }"
+              hide-details
+              @click:append="openTime"
+              @click:clear="time.textField = null"
+              @keyup.enter="time.menu = false"
+              @focus="openTime"
+              @input="openTime"
+              @blur="emitValue"
+            )
+          v-time-picker(
+            :value="time.picker.value"
+            format="24hr"
+            @change="setTimePickerValue"
+            @click:hour="setTimePickerValue"
+          )
+            v-spacer
+            v-btn(text color="primary" @click="time.menu = false") Отмена
 
     template(
       v-for="(_, name) in $scopedSlots"
@@ -326,6 +323,24 @@ export default {
 
 <style lang="scss" scoped>
 .v-datetime-field {
+  &.v-input ::v-deep {
+    & > .v-input__control {
+      & > .v-input__slot {
+        display: block !important;
+      }
+
+      & > .v-messages {
+        padding: 0 12px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  &__wrapper {
+    display: flex;
+    margin-top: 4px;
+  }
+
   &__date {
     flex: 1;
   }

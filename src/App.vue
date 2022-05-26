@@ -13,7 +13,6 @@
           )
             v-datetime-field.mt-7(
               v-model="formData['date']"
-              solo
               outlined
               :error-messages="errors"
             )
