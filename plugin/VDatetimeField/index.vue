@@ -7,14 +7,13 @@
       .v-datetime-field__date(v-if="!onlyTime")
         v-menu(
           v-model="date.menu"
-          v-bind="MENU_CONF"
+          v-bind="mixedMenuProps"
         )
           template(v-slot:activator="{ on }")
             v-text-field(
               v-model="date.textField"
-              :label="labelDate"
               append-icon="mdi-calendar"
-              v-bind="$attrs"
+              v-bind="dateProps"
               v-on="on"
               type="text"
               v-mask="'##.##.####'"
@@ -24,8 +23,7 @@
               @click:clear="date.textField = null"
               @keyup.enter="timeFocus"
               @keydown.tab="timeFocus"
-              @focus="openDate"
-              @input="openDate"
+              @click="openDate"
               @blur="emitValue"
             )
           v-date-picker(
@@ -41,15 +39,14 @@
       .v-datetime-field__time(v-if="!onlyDate")
         v-menu(
           v-model="time.menu"
-          v-bind="MENU_CONF"
+          v-bind="mixedMenuProps"
         )
           template(v-slot:activator="{ on }")
             v-text-field(
               ref="timePickerInput"
               v-model="time.textField"
-              v-bind="$attrs"
+              v-bind="timeProps"
               v-on="on"
-              :label="labelTime"
               append-icon="mdi-clock"
               type="text"
               v-mask="'##:##'"
@@ -59,8 +56,7 @@
               @click:append="openTime"
               @click:clear="time.textField = null"
               @keyup.enter="time.menu = false"
-              @focus="openTime"
-              @input="openTime"
+              @click="openTime"
               @blur="emitValue"
             )
           v-time-picker(
@@ -85,6 +81,13 @@ import { mask } from 'vue-the-mask';
 
 const DEFAULT_FORMAT_DATE = 'dd.MM.yyyy';
 
+const DEFAULT_MENU_PROPS = {
+  'min-width': 290,
+  'offset-y': true,
+  'close-on-content-click': false,
+  transition: 'scale-transition',
+};
+
 export default {
   name: 'DatePicker',
   directives: {
@@ -93,22 +96,15 @@ export default {
   props: {
     value: { type: String, default: null },
 
-    labelDate: { type: String, default: 'Date' },
-    labelTime: { type: String, default: 'Time' },
-
     onlyDate: { type: Boolean, default: false },
     onlyTime: { type: Boolean, default: false },
+
+    dateProps: { type: Object, default: () => ({}) },
+    timeProps: { type: Object, default: () => ({}) },
+    menuProps: { type: Object, default: () => ({}) },
   },
   data() {
     return {
-      MENU_CONF: {
-        'nudge-top': 20,
-        'min-width': 290,
-        'offset-y': true,
-        'close-on-content-click': false,
-        transition: 'scale-transition',
-      },
-
       date: {
         menu: false,
         textField: null,
@@ -135,6 +131,9 @@ export default {
     };
   },
   computed: {
+    mixedMenuProps() {
+      return { ...DEFAULT_MENU_PROPS, ...this.menuProps };
+    },
     outputValue() {
       let val = null;
 
@@ -173,7 +172,12 @@ export default {
   watch: {
     value: {
       handler(val) {
-        const datetime = val && val.split(' ').map((i) => ({ value: i, isTime: i.includes(':') })) || [];
+        const datetime =
+          (val &&
+            val
+              .split(' ')
+              .map((i) => ({ value: i, isTime: i.includes(':') }))) ||
+          [];
 
         if (datetime.length === 2) {
           const [date, time] = datetime;

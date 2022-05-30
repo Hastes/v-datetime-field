@@ -66,17 +66,25 @@ import VDatetimeField from 'v-datetime-field'
 Vue.use(VDatetimeField)
 ```
 
+`main.js`
+```html
+<v-datetime-field
+  v-model="formData['date']"
+  :menu-props="{ top: true }"
+  :date-props="{ outlined: true, label: 'Date' }"
+  :error-messages="errors"
+/>
+```
+
 # Props
 
 | Name           | Type       | Default        | Required | Description                   |
 | -------------- | ---------- | -------------- | -------- | ----------------------------- |
-| label-date     | `string`   | Date           | --       | Label for text input date     |
-| label-time     | `string`   | Time           | --       | Label for text input time     |
+| date-props     | `object`   | {}             | --       | Properties for date text input|
+| time-props     | `object`   | {}             | --       | Properties for time text input|
+| menu-props     | `object`   | {}             | --       | Properties for v-menu         |
 | only-date      | `boolean`  | `False`        | --       | Use only datepicker           |
 | only-time      | `boolean`  | `False`        | --       | Use only timepicker           |
-
-And includes all v-text-field props e.g. outlined, depressed, etc.
-
 
 
 ## Roadmap
