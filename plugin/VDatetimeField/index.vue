@@ -135,25 +135,8 @@ export default {
       return { ...DEFAULT_MENU_PROPS, ...this.menuProps };
     },
     outputValue() {
-      let val = null;
-
-      if (!this.date.picker) {
-        val = this.time.picker.value;
-      }
-
-      if (!this.time.picker.value) {
-        val = this.date.picker;
-      }
-
-      if (!this.onlyDate && !this.onlyTime) {
-        val = null;
-
-        if (this.date.picker && this.time.picker.value) {
-          val = `${this.date.picker} ${this.time.picker.value}`;
-        }
-      }
-
-      return val;
+      const dateTimeArr = [this.date.picker, this.time.picker.value];
+      return dateTimeArr.join(' ').trim() || null;
     },
     commonAttrs() {
       const { $attrs } = this || {};
@@ -178,6 +161,12 @@ export default {
               .split(' ')
               .map((i) => ({ value: i, isTime: i.includes(':') }))) ||
           [];
+
+        // const [date, time] = datetime;
+        // this.data.picker = date?.value || null;
+        // this.time.picker = {
+        //   value: time
+        // }
 
         if (datetime.length === 2) {
           const [date, time] = datetime;
@@ -238,9 +227,7 @@ export default {
     },
     'time.textField': function (val) {
       let valFormatted = null;
-      if (val && val.length === 2) {
-        valFormatted = `${val}:00`;
-      }
+
       if (val && val.length === 5) {
         valFormatted = val;
       }
