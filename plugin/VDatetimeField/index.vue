@@ -2,6 +2,7 @@
   v-input.v-datetime-field(
     v-bind="commonAttrs"
     :error-count="commonAttrs['error-messages'].length"
+    :value="outputValue"
   )
     .v-datetime-field__wrapper
       .v-datetime-field__date(v-if="!onlyTime")
@@ -161,12 +162,6 @@ export default {
               .split(' ')
               .map((i) => ({ value: i, isTime: i.includes(':') }))) ||
           [];
-
-        // const [date, time] = datetime;
-        // this.data.picker = date?.value || null;
-        // this.time.picker = {
-        //   value: time
-        // }
 
         if (datetime.length === 2) {
           const [date, time] = datetime;
