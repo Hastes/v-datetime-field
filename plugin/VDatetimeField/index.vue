@@ -136,8 +136,12 @@ export default {
       return { ...DEFAULT_MENU_PROPS, ...this.menuProps };
     },
     outputValue() {
-      const dateTimeArr = [this.date.picker, this.time.picker.value];
-      return dateTimeArr.join(' ').trim() || null;
+      const [date, time] = [this.date.picker, this.time.picker.value];
+
+      if (!this.onlyDate && !this.onlyTime) {
+        return date && time ? [date, time].join(' ').trim() : '';
+      }
+      return [date, time].join(' ').trim() || null;
     },
     commonAttrs() {
       const { $attrs } = this || {};
@@ -156,35 +160,17 @@ export default {
   watch: {
     value: {
       handler(val) {
-        const datetime =
-          (val &&
-            val
-              .split(' ')
-              .map((i) => ({ value: i, isTime: i.includes(':') }))) ||
-          [];
+        const datetime = (val && val.split(' ')) || [val, val];
+        let [date, time] = datetime;
 
-        if (datetime.length === 2) {
-          const [date, time] = datetime;
-          this.date.picker = date.value;
-          this.time.picker = {
-            value: time.value,
-            fullfilled: true,
-          };
-        } else if (datetime.length === 1) {
-          const [firstVal] = datetime;
-          if (firstVal.isTime) {
-            this.time.picker = {
-              value: firstVal.value,
-              fullfilled: true,
-            };
-          } else this.date.picker = firstVal.value;
-        } else {
-          this.date.picker = null;
-          this.time.picker = {
-            value: null,
-            fullfilled: false,
-          };
+        if (datetime.length === 1) {
+          const [firstValue] = datetime;
+          date = !firstValue.includes(':') ? firstValue : null;
+          time = firstValue.includes(':') ? firstValue : null;
         }
+
+        if (date === null) this.date.picker = date;
+        if (time === null) this.time.picker = { value: time, fullfilled: !val };
       },
       immediate: true,
     },
