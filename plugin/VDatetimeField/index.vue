@@ -29,6 +29,9 @@
             )
           v-date-picker(
             v-model="date.picker"
+            v-bind="datePickerProps"
+            :min="formatMinMaxDate(datePickerProps.min)"
+            :max="formatMinMaxDate(datePickerProps.max)"
             no-title
             scrollable
             @input="date.menu = false"
@@ -61,6 +64,7 @@
               @blur="emitValue"
             )
           v-time-picker(
+            v-bind="timePickerProps"
             :value="time.picker.value"
             format="24hr"
             @change="setTimePickerValue"
@@ -102,6 +106,8 @@ export default {
 
     dateProps: { type: Object, default: () => ({}) },
     timeProps: { type: Object, default: () => ({}) },
+    datePickerProps: { type: Object, default: () => ({}) },
+    timePickerProps: { type: Object, default: () => ({}) },
     menuProps: { type: Object, default: () => ({}) },
   },
   data() {
@@ -234,6 +240,9 @@ export default {
     },
   },
   methods: {
+    formatMinMaxDate(val) {
+      return val ? format(val, 'yyyy-MM-dd') : undefined;
+    },
     setDate(val) {
       return format(parse(val, DEFAULT_FORMAT_DATE, new Date()), 'yyyy-MM-dd');
     },

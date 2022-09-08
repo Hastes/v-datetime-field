@@ -17,7 +17,7 @@
                   v-datetime-field(
                     v-model="formData['date']"
                     :menu-props="{ top: true }"
-                    :date-props="{ outlined: true}"
+                    :date-props="{ outlined: true }"
                     :error-messages="errors"
                     :rules="[v => !!v || 'required']"
                     required
