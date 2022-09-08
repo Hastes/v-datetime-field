@@ -175,8 +175,8 @@ export default {
           time = firstValue.includes(':') ? firstValue : null;
         }
 
-        if (date === null) this.date.picker = date;
-        if (time === null) this.time.picker = { value: time, fullfilled: !val };
+        if (date || date === null) this.date.picker = date;
+        if (time || time === null) this.time.picker = { value: time, fullfilled: !val };
       },
       immediate: true,
     },
@@ -186,11 +186,11 @@ export default {
     'date.picker': {
       handler(val) {
         let date = null;
+
         if (val) {
           date = parseISO(val);
           date = format(date, DEFAULT_FORMAT_DATE);
         }
-
         this.date.textField = date;
       },
       immediate: true,
