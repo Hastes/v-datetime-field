@@ -20,14 +20,10 @@
               v-mask="'##.##.####'"
               placeholder="__.__.____"
               hide-details
-              @click:append="openDate"
               @click:clear="date.textField = null"
-              @keyup.enter="timeFocus"
-              @keydown.tab="timeFocus"
-              @click="openDate"
-              @blur="emitValue"
+              @focus.stop.prevent="openDate"
             )
-          v-date-picker(
+          v-date-picker.included(
             v-model="date.picker"
             v-bind="datePickerProps"
             :min="formatMinMaxDate(datePickerProps.min)"
@@ -35,7 +31,6 @@
             no-title
             scrollable
             @input="date.menu = false"
-            @click:date="timeFocus"
           )
             v-spacer
             v-btn(text color="primary" @click="date.menu = false") Отмена
@@ -57,13 +52,10 @@
               placeholder="__:__"
               :class="{ 'ml-2': !onlyTime }"
               hide-details
-              @click:append="openTime"
               @click:clear="time.textField = null"
-              @keyup.enter="time.menu = false"
-              @click="openTime"
-              @blur="emitValue"
+              @focus.stop.prevent="openTime"
             )
-          v-time-picker(
+          v-time-picker.included(
             v-bind="timePickerProps"
             :value="time.picker.value"
             format="24hr"
@@ -81,7 +73,7 @@
 </template>
 
 <script>
-import { parseISO, format, parse } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { mask } from 'vue-the-mask';
 
 const DEFAULT_FORMAT_DATE = 'dd.MM.yyyy';
@@ -99,7 +91,7 @@ export default {
     mask,
   },
   props: {
-    value: { type: String, default: null },
+    value: { type: [String, Date], default: null },
 
     onlyDate: { type: Boolean, default: false },
     onlyTime: { type: Boolean, default: false },
@@ -164,80 +156,109 @@ export default {
     },
   },
   watch: {
+    // Value watchers
     value: {
       handler(val) {
-        const datetime = (val && val.split(' ')) || [val, val];
-        let [date, time] = datetime;
+        let datetime = [null, null];
 
-        if (datetime.length === 1) {
-          const [firstValue] = datetime;
-          date = !firstValue.includes(':') ? firstValue : null;
-          time = firstValue.includes(':') ? firstValue : null;
+        if (val) {
+          if (typeof val === 'string') datetime = val.split(' ');
+          else {
+            datetime = new Date(val).toLocaleString().split(', ');
+            datetime[0] = this.setDate(datetime[0]);
+          }
         }
 
-        if (date || date === null) this.date.picker = date;
-        if (time || time === null) this.time.picker = { value: time, fullfilled: !val };
+        const [date, time] = datetime;
+
+        this.date.picker = date;
+        this.time.picker = { value: time, fullfilled: !val };
       },
       immediate: true,
     },
-    outputValue: function (val) {
+    outputValue(val) {
       this.emitValue();
     },
+
+    // Date watchers
     'date.picker': {
       handler(val) {
         let date = null;
 
-        if (val) {
-          date = parseISO(val);
-          date = format(date, DEFAULT_FORMAT_DATE);
-        }
+        if (val) date = format(new Date(val), DEFAULT_FORMAT_DATE);
         this.date.textField = date;
       },
       immediate: true,
     },
-    'date.textField': function (val) {
-      if ((val && val.length === 10) || !val) {
-        this.date.validate.success = !val ? true : this.date.validate.rule(val);
+    'date.textField': {
+      handler(val) {
+        if ((val && val.length === 10) || !val) {
+          this.date.validate.success = !val ? true : this.date.validate.rule(val);
 
-        if (this.date.validate.success) {
-          this.date.picker = val && this.setDate(val);
-        } else {
-          this.date.menu = false;
+          if (this.date.validate.success) {
+            this.date.picker = val && this.setDate(val);
+          } else {
+            this.date.menu = false;
+          }
         }
-      }
+      },
     },
+
+    // Time watchers
     'time.picker.value': {
       handler(val) {
         this.time.textField = val;
       },
       immediate: true,
     },
-    'time.textField': function (val) {
-      let valFormatted = null;
+    'time.textField': {
+      handler(val) {
+        let valFormatted = null;
 
-      if (val && val.length === 5) {
-        valFormatted = val;
-      }
-
-      if (valFormatted) {
-        this.time.validate.success = this.time.validate.rule(valFormatted);
-
-        if (this.time.validate.success) {
-          this.time.picker = {
-            value: valFormatted,
-            fullfilled: val.length === 5,
-          };
-        } else {
-          this.time.menu = false;
+        if (val && val.length === 5) {
+          valFormatted = val;
         }
-      }
-      if (!val) {
-        this.time.picker = {
-          value: null,
-          fullfilled: true,
-        };
-      }
+
+        if (valFormatted) {
+          this.time.validate.success = this.time.validate.rule(valFormatted);
+
+          if (this.time.validate.success) {
+            this.time.picker = {
+              value: valFormatted,
+              fullfilled: val.length === 5,
+            };
+          } else {
+            this.time.menu = false;
+          }
+        }
+        if (!val) {
+          this.time.picker = {
+            value: null,
+            fullfilled: true,
+          };
+        }
+      },
     },
+  },
+  mounted() {
+    const { $el, emitValue, closeMenus } = this;
+
+    $el.addEventListener('focusout', (event) => {
+      // If focus is still in the input, do nothing
+      const { relatedTarget } = event;
+
+      if (!relatedTarget) emitValue();
+
+      if (
+        $el.contains(relatedTarget) ||
+        relatedTarget.classList.contains('.included') ||
+        relatedTarget.closest('.included')
+      )
+        return;
+
+      closeMenus();
+      emitValue();
+    });
   },
   methods: {
     formatMinMaxDate(val) {
@@ -267,32 +288,28 @@ export default {
         this.time.textField = `${hours}:00`;
       }
     },
-    emitValue() {
-      this.$emit('input', this.outputValue);
-    },
     openDate() {
       if (this.date.validate.success) {
-        this.date.menu = true;
-        this.time.menu = false;
+        setTimeout(() => {
+          this.date.menu = true;
+          this.time.menu = false;
+        }, 150);
       }
     },
     openTime() {
       if (this.time.validate.success) {
-        this.time.menu = true;
-        this.date.menu = false;
+        setTimeout(() => {
+          this.time.menu = true;
+          this.date.menu = false;
+        }, 150);
       }
     },
-    timeFocus() {
-      const { timePickerInput } = this.$refs;
+    closeMenus() {
       this.date.menu = false;
-
-      if (timePickerInput) {
-        this.$nextTick(() => {
-          setTimeout(() => {
-            timePickerInput.focus();
-          });
-        });
-      }
+      this.time.menu = false;
+    },
+    emitValue() {
+      this.$emit('input', this.outputValue);
     },
   },
 };
