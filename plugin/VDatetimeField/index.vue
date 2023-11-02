@@ -11,10 +11,10 @@
           v-bind="mixedMenuProps"
         )
           template(v-slot:activator="{ on }")
-            v-slot(name="dateFieldLabel")
+            slot(name="dateFieldLabel")
             v-text-field(
               v-model="date.textField"
-              v-bind="dateAttrs"
+              v-bind="extendDateProps"
               v-on="on"
               type="text"
               v-mask="'##.##.####'"
@@ -39,11 +39,11 @@
           v-bind="mixedMenuProps"
         )
           template(v-slot:activator="{ on }")
-            v-slot(name="timeFieldLabel")
+            slot(name="timeFieldLabel")
             v-text-field(
               ref="timePickerInput"
               v-model="time.textField"
-              v-bind="timeAttrs"
+              v-bind="extendTimeProps"
               v-on="on"
               type="text"
               v-mask="'##:##'"
@@ -125,13 +125,13 @@ export default {
         },
       },
 
-      dateAttrs: {
+      extendDateProps: {
         appendIcon: 'mdi-calendar',
         placeholder: '__.__.____',
         hideDetails: true,
         ...this.dateProps,
       },
-      timeAttrs: {
+      extendTimeProps: {
         appendIcon: 'mdi-clock',
         placeholder: '__:__',
         hideDetails: true,
