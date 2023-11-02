@@ -11,15 +11,13 @@
           v-bind="mixedMenuProps"
         )
           template(v-slot:activator="{ on }")
+            v-slot(name="dateFieldLabel")
             v-text-field(
               v-model="date.textField"
-              append-icon="mdi-calendar"
-              v-bind="dateProps"
+              v-bind="dateAttrs"
               v-on="on"
               type="text"
               v-mask="'##.##.####'"
-              placeholder="__.__.____"
-              hide-details
               @click:clear="date.textField = null"
               @focus.stop.prevent="openDate"
             )
@@ -33,7 +31,7 @@
             @input="date.menu = false"
           )
             v-spacer
-            v-btn(text color="primary" @click="date.menu = false") Отмена
+            v-btn(text :color="buttonColor" @click="date.menu = false") Отмена
 
       .v-datetime-field__time(v-if="!onlyDate")
         v-menu(
@@ -41,17 +39,14 @@
           v-bind="mixedMenuProps"
         )
           template(v-slot:activator="{ on }")
+            v-slot(name="timeFieldLabel")
             v-text-field(
               ref="timePickerInput"
               v-model="time.textField"
-              v-bind="timeProps"
+              v-bind="timeAttrs"
               v-on="on"
-              append-icon="mdi-clock"
               type="text"
               v-mask="'##:##'"
-              placeholder="__:__"
-              :class="{ 'ml-2': !onlyTime }"
-              hide-details
               @click:clear="time.textField = null"
               @focus.stop.prevent="openTime"
             )
@@ -63,7 +58,7 @@
             @click:hour="setTimePickerValue"
           )
             v-spacer
-            v-btn(text color="primary" @click="time.menu = false") Отмена
+            v-btn(text :color="buttonColor" @click="time.menu = false") Отмена
 
     template(
       v-for="(_, name) in $scopedSlots"
@@ -101,6 +96,8 @@ export default {
     datePickerProps: { type: Object, default: () => ({}) },
     timePickerProps: { type: Object, default: () => ({}) },
     menuProps: { type: Object, default: () => ({}) },
+
+    buttonColor: { type: String, default: 'primary' },
   },
   data() {
     return {
@@ -127,6 +124,19 @@ export default {
           success: true,
         },
       },
+
+      dateAttrs: {
+        appendIcon: 'mdi-calendar',
+        placeholder: '__.__.____',
+        hideDetails: true,
+        ...this.dateProps,
+      },
+      timeAttrs: {
+        appendIcon: 'mdi-clock',
+        placeholder: '__:__',
+        hideDetails: true,
+        ...this.timeProps,
+      }
     };
   },
   computed: {
@@ -176,7 +186,7 @@ export default {
       },
       immediate: true,
     },
-    outputValue(val) {
+    outputValue() {
       this.emitValue();
     },
 
@@ -333,6 +343,7 @@ export default {
   &__wrapper {
     display: flex;
     margin-top: 4px;
+    gap: 8px;
   }
 
   &__date {
