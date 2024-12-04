@@ -13,6 +13,7 @@
           template(v-slot:activator="{ on }")
             slot(name="dateFieldLabel")
             v-text-field(
+              ref="datePickerInput"
               v-model="date.textField"
               v-bind="extendDateProps"
               v-on="on"
@@ -21,6 +22,11 @@
               @click:clear="date.textField = null"
               @focus.stop.prevent="openDate"
             )
+              template(v-for="name in dateField.scopedSlots" v-slot:[name]="data")
+                slot(:name="`date-field.${name}`" v-bind="data")
+              template(v-for="name in dateField.slots" :slot="name")
+                slot(:name="`date-field.${name}`")
+
           v-date-picker.included(
             v-model="date.picker"
             v-bind="datePickerProps"
@@ -50,6 +56,11 @@
               @click:clear="time.textField = null"
               @focus.stop.prevent="openTime"
             )
+              template(v-for="name in timeField.scopedSlots" v-slot:[name]="data")
+                slot(:name="`time-field.${name}`" v-bind="data")
+              template(v-for="name in timeField.slots" :slot="name")
+                slot(:name="`time-field.${name}`")
+
           v-time-picker.included(
             v-bind="timePickerProps"
             :value="time.picker.value"
@@ -140,6 +151,20 @@ export default {
     };
   },
   computed: {
+    dateField() {
+      const { $scopedSlots, $slots } = this;
+      return {
+        scopedSlots: this.slotsGenerator('date-field', $scopedSlots),
+        slots: this.slotsGenerator('date-field', $slots),
+      };
+    },
+    timeField() {
+      const { $scopedSlots, $slots } = this;
+      return {
+        scopedSlots: this.slotsGenerator('time-field', $scopedSlots),
+        slots: this.slotsGenerator('time-field', $slots),
+      };
+    },
     mixedMenuProps() {
       return { ...DEFAULT_MENU_PROPS, ...this.menuProps };
     },
@@ -261,8 +286,8 @@ export default {
 
       if (
         $el.contains(relatedTarget) ||
-        relatedTarget.classList.contains('.included') ||
-        relatedTarget.closest('.included')
+        relatedTarget?.classList?.contains('.included') ||
+        relatedTarget?.closest('.included')
       )
         return;
 
@@ -320,6 +345,15 @@ export default {
     },
     emitValue() {
       this.$emit('input', this.outputValue);
+    },
+    slotsGenerator(name, slots) {
+      return Object.keys(slots)
+        .map((key) => {
+          if (key.startsWith(name)) {
+            return key.split('.').at(-1);
+          }
+        })
+        .filter(Boolean);
     },
   },
 };
