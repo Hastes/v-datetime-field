@@ -17,6 +17,9 @@
                   v-model="formData['date']"
                   :menu-props="{ top: true }"
                   :date-props="{ outlined: true }"
+                  :time-props="{ outlined: true }"
+                  :time-picker-props="{ landscape: true, min: '13:00' }"
+                  :date-picker-props="{ min: '2025-11-06' }"
                   :error-messages="errors"
                   required
                 )

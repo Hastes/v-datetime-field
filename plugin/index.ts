@@ -9,6 +9,9 @@ import {
   VTextField,
   VInput,
 } from 'vuetify/lib';
+import {
+  ClickOutside
+} from 'vuetify/lib/directives';
 
 import DatetimeField from './VDatetimeField/index.vue';
 
@@ -19,6 +22,7 @@ Vue.component('VDatePicker', VDatePicker);
 Vue.component('VTextField', VTextField);
 Vue.component('VSpacer', VSpacer);
 Vue.component('VInput', VInput);
+Vue.directive('click-outside', ClickOutside)
 
 class VDatetimeFieldPlugin {
   public install(Vue: VueConstructor): void {

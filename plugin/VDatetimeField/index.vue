@@ -21,6 +21,7 @@
               v-mask="'##.##.####'"
               @click:clear="date.textField = null"
               @focus.stop.prevent="openDate"
+              @blur="onBlur"
             )
               template(v-for="name in dateField.scopedSlots" v-slot:[name]="data")
                 slot(:name="`date-field.${name}`" v-bind="data")
@@ -35,9 +36,10 @@
             no-title
             scrollable
             @input="date.menu = false"
+            @mousedown.native.prevent
           )
             v-spacer
-            v-btn(text :color="buttonColor" @click="date.menu = false") Отмена
+            v-btn(text :color="buttonColor" @click="date.menu = false") Закрыть
 
       .v-datetime-field__time(v-if="!onlyDate")
         v-menu(
@@ -55,6 +57,7 @@
               v-mask="'##:##'"
               @click:clear="time.textField = null"
               @focus.stop.prevent="openTime"
+              @blur="onBlur"
             )
               template(v-for="name in timeField.scopedSlots" v-slot:[name]="data")
                 slot(:name="`time-field.${name}`" v-bind="data")
@@ -64,12 +67,14 @@
           v-time-picker.included(
             v-bind="timePickerProps"
             :value="time.picker.value"
+            :active-picker="!time.picker.value ? 'HOUR' : undefined"
             format="24hr"
             @change="setTimePickerValue"
             @click:hour="setTimePickerValue"
+            @mousedown.native.prevent
           )
             v-spacer
-            v-btn(text :color="buttonColor" @click="time.menu = false") Отмена
+            v-btn(text :color="buttonColor" @click="time.menu = false") Закрыть
 
     template(
       v-for="(_, name) in $scopedSlots"
@@ -89,6 +94,7 @@ const DEFAULT_MENU_PROPS = {
   'offset-y': true,
   'close-on-content-click': false,
   transition: 'scale-transition',
+  contentClass: 'included',
 };
 
 export default {
@@ -174,6 +180,7 @@ export default {
       if (!this.onlyDate && !this.onlyTime) {
         return date && time ? [date, time].join(' ').trim() : '';
       }
+
       return [date, time].join(' ').trim() || null;
     },
     commonAttrs() {
@@ -206,6 +213,12 @@ export default {
 
         const [date, time] = datetime;
 
+        if (this.outputValue === val) {
+          this.date.picker = date || this.date.picker;
+          this.time.picker = { value: time || this.time.picker.value, fullfilled: !val };
+          return;
+        }
+
         this.date.picker = date;
         this.time.picker = { value: time, fullfilled: !val };
       },
@@ -231,6 +244,10 @@ export default {
           this.date.validate.success = !val ? true : this.date.validate.rule(val);
 
           if (this.date.validate.success) {
+            if (!this.time.picker?.value) {
+              this.$refs.timePickerInput?.focus?.();
+            }
+
             this.date.picker = val && this.setDate(val);
           } else {
             this.date.menu = false;
@@ -258,6 +275,10 @@ export default {
           this.time.validate.success = this.time.validate.rule(valFormatted);
 
           if (this.time.validate.success) {
+            if (!this.date.picker) {
+              this.$refs.datePickerInput?.focus?.();
+            }
+
             this.time.picker = {
               value: valFormatted,
               fullfilled: val.length === 5,
@@ -275,29 +296,9 @@ export default {
       },
     },
   },
-  mounted() {
-    const { $el, emitValue, closeMenus } = this;
-
-    $el.addEventListener('focusout', (event) => {
-      // If focus is still in the input, do nothing
-      const { relatedTarget } = event;
-
-      if (!relatedTarget) emitValue();
-
-      if (
-        $el.contains(relatedTarget) ||
-        relatedTarget?.classList?.contains('.included') ||
-        relatedTarget?.closest('.included')
-      )
-        return;
-
-      closeMenus();
-      emitValue();
-    });
-  },
   methods: {
     formatMinMaxDate(val) {
-      return val ? format(val, 'yyyy-MM-dd') : undefined;
+      return val ? format(new Date(val), 'yyyy-MM-dd') : undefined;
     },
     setDate(val) {
       return format(parse(val, DEFAULT_FORMAT_DATE, new Date()), 'yyyy-MM-dd');
@@ -339,12 +340,12 @@ export default {
         }, 150);
       }
     },
+    emitValue() {
+      this.$emit('input', this.outputValue);
+    },
     closeMenus() {
       this.date.menu = false;
       this.time.menu = false;
-    },
-    emitValue() {
-      this.$emit('input', this.outputValue);
     },
     slotsGenerator(name, slots) {
       return Object.keys(slots)
@@ -354,6 +355,14 @@ export default {
           }
         })
         .filter(Boolean);
+    },
+    onBlur(e) {
+      if (this.$el.contains(e.relatedTarget) && this.date.textField) {
+        return;
+      }
+
+      this.emitValue();
+      this.closeMenus();
     },
   },
 };
