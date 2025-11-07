@@ -18,8 +18,8 @@
                   :menu-props="{ top: true }"
                   :date-props="{ outlined: true }"
                   :time-props="{ outlined: true }"
-                  :time-picker-props="{ landscape: true, min: '13:00' }"
-                  :date-picker-props="{ min: '2025-11-06' }"
+                  :time-picker-props="{ landscape: true, min: '13:00', max: '15:00' }"
+                  :date-picker-props="{ min: '2025-11-06', max: '2025-11-10' }"
                   :error-messages="errors"
                   required
                 )
@@ -37,7 +37,7 @@
                 v-btn(
                   color="info"
                   depressed
-                  :disabled="invalid && dirty"
+                  :disabled="invalid"
                 ) Отправить
 </template>
 
