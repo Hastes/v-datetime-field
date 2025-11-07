@@ -65,7 +65,7 @@
                 slot(:name="`time-field.${name}`")
 
           v-time-picker.included(
-            v-bind="timePickerProps"
+            v-bind="normalizedTimePickerProps"
             :value="time.picker.value"
             :active-picker="!time.picker.value ? 'HOUR' : undefined"
             format="24hr"
@@ -153,7 +153,7 @@ export default {
         placeholder: '__:__',
         hideDetails: true,
         ...this.timeProps,
-      }
+      },
     };
   },
   computed: {
@@ -174,6 +174,19 @@ export default {
     mixedMenuProps() {
       return { ...DEFAULT_MENU_PROPS, ...this.menuProps };
     },
+    normalizedTimePickerProps() {
+      const timePickerProps = { ...this.timePickerProps };
+      const minTime = this.resolveTimeLimit('min');
+      const maxTime = this.resolveTimeLimit('max');
+
+      if (minTime === undefined) delete timePickerProps.min;
+      else timePickerProps.min = minTime;
+
+      if (maxTime === undefined) delete timePickerProps.max;
+      else timePickerProps.max = maxTime;
+
+      return timePickerProps;
+    },
     outputValue() {
       const [date, time] = [this.date.picker, this.time.picker.value];
 
@@ -186,8 +199,10 @@ export default {
     commonAttrs() {
       const { $attrs } = this || {};
       const localDatetimeErrors = [];
-      if (!this.date.validate.success) localDatetimeErrors.push('Дата введена неверно');
-      if (!this.time.validate.success) localDatetimeErrors.push('Время введено неверно');
+      if (!this.date.validate.success)
+        localDatetimeErrors.push('Дата введена неверно');
+      if (!this.time.validate.success)
+        localDatetimeErrors.push('Время введено неверно');
       return {
         ...$attrs,
         'error-messages': [
@@ -215,7 +230,10 @@ export default {
 
         if (this.outputValue === val) {
           this.date.picker = date || this.date.picker;
-          this.time.picker = { value: time || this.time.picker.value, fullfilled: !val };
+          this.time.picker = {
+            value: time || this.time.picker.value,
+            fullfilled: !val,
+          };
           return;
         }
 
@@ -241,7 +259,9 @@ export default {
     'date.textField': {
       handler(val) {
         if ((val && val.length === 10) || !val) {
-          this.date.validate.success = !val ? true : this.date.validate.rule(val);
+          this.date.validate.success = !val
+            ? true
+            : this.date.validate.rule(val);
 
           if (this.date.validate.success) {
             if (val) {
@@ -255,8 +275,14 @@ export default {
 
               // Если есть и дата, и время, проверяем комбинированное значение
               if (!this.onlyDate && this.time.picker?.value) {
-                const clamped = this.clampDateTime(clampedDate, this.time.picker.value);
-                if (clamped.date !== clampedDate || clamped.time !== this.time.picker.value) {
+                const clamped = this.clampDateTime(
+                  clampedDate,
+                  this.time.picker.value,
+                );
+                if (
+                  clamped.date !== clampedDate ||
+                  clamped.time !== this.time.picker.value
+                ) {
                   this.date.textField = clamped.date;
                   this.time.textField = clamped.time;
                   clampedDate = clamped.date;
@@ -298,7 +324,7 @@ export default {
 
           if (this.time.validate.success) {
             // Применяем ограничения min/max для времени
-            let clampedTime = this.clampTime(valFormatted);
+            let clampedTime = this.clampTime(valFormatted, this.date.picker);
 
             // Если значение было изменено из-за ограничений, обновляем textField
             if (clampedTime !== valFormatted) {
@@ -308,7 +334,10 @@ export default {
 
             // Если есть и дата, и время, проверяем комбинированное значение
             if (!this.onlyTime && this.date.picker) {
-              const dateText = format(parse(this.date.picker, 'yyyy-MM-dd', new Date()), DEFAULT_FORMAT_DATE);
+              const dateText = format(
+                parse(this.date.picker, 'yyyy-MM-dd', new Date()),
+                DEFAULT_FORMAT_DATE,
+              );
               const clamped = this.clampDateTime(dateText, clampedTime);
               if (clamped.date !== dateText || clamped.time !== clampedTime) {
                 this.date.textField = clamped.date;
@@ -345,6 +374,54 @@ export default {
     setDate(val) {
       return format(parse(val, DEFAULT_FORMAT_DATE, new Date()), 'yyyy-MM-dd');
     },
+    normalizeDateISO(value) {
+      if (!value) return undefined;
+
+      const date =
+        typeof value === 'string' ? parseISO(value) : new Date(value);
+      return format(date, 'yyyy-MM-dd');
+    },
+    resolveTimeLimit(type, dateISO = this.date.picker) {
+      const limit = this.timePickerProps?.[type];
+      if (!limit) return undefined;
+
+      if (this.onlyTime) return limit;
+
+      const boundaryDate = this.datePickerProps?.[type];
+      if (!boundaryDate) return limit;
+
+      if (!dateISO) return undefined;
+
+      const boundaryISO = this.normalizeDateISO(boundaryDate);
+      return dateISO === boundaryISO ? limit : undefined;
+    },
+    createBoundaryDateTime(type, referenceDate) {
+      const dateLimit = this.datePickerProps?.[type];
+      const timeLimit = this.timePickerProps?.[type];
+
+      if (!dateLimit && !timeLimit) return null;
+
+      let boundaryDate = null;
+
+      if (dateLimit) {
+        boundaryDate =
+          typeof dateLimit === 'string'
+            ? parseISO(dateLimit)
+            : new Date(dateLimit);
+      } else {
+        boundaryDate = new Date(referenceDate);
+      }
+
+      if (timeLimit) {
+        const [hours, minutes] = timeLimit.split(':').map(Number);
+        boundaryDate.setHours(hours, minutes, 0, 0);
+      } else if (dateLimit) {
+        if (type === 'min') boundaryDate.setHours(0, 0, 0, 0);
+        else boundaryDate.setHours(23, 59, 59, 999);
+      }
+
+      return boundaryDate;
+    },
     clampDate(dateValue) {
       if (!dateValue) return dateValue;
 
@@ -355,21 +432,25 @@ export default {
       let clampedDate = parsedDate;
 
       if (minDate) {
-        const minDateObj = typeof minDate === 'string' ? parseISO(minDate) : new Date(minDate);
+        const minDateObj =
+          typeof minDate === 'string' ? parseISO(minDate) : new Date(minDate);
         clampedDate = max([clampedDate, minDateObj]);
       }
 
       if (maxDate) {
-        const maxDateObj = typeof maxDate === 'string' ? parseISO(maxDate) : new Date(maxDate);
+        const maxDateObj =
+          typeof maxDate === 'string' ? parseISO(maxDate) : new Date(maxDate);
         clampedDate = min([clampedDate, maxDateObj]);
       }
 
       return format(clampedDate, DEFAULT_FORMAT_DATE);
     },
-    clampTime(timeValue) {
+    clampTime(timeValue, dateISO = this.date.picker) {
       if (!timeValue) return timeValue;
 
-      const { min: minTime, max: maxTime } = this.timePickerProps;
+      const minTime = this.resolveTimeLimit('min', dateISO);
+      const maxTime = this.resolveTimeLimit('max', dateISO);
+
       if (!minTime && !maxTime) return timeValue;
 
       const [hours, minutes] = timeValue.split(':').map(Number);
@@ -397,10 +478,12 @@ export default {
     clampDateTime(dateValue, timeValue) {
       if (!dateValue || !timeValue) return { date: dateValue, time: timeValue };
 
-      const { min: minDate, max: maxDate } = this.datePickerProps;
-      const { min: minTime, max: maxTime } = this.timePickerProps;
+      const hasDateLimits =
+        this.datePickerProps?.min || this.datePickerProps?.max;
+      const hasTimeLimits =
+        this.timePickerProps?.min || this.timePickerProps?.max;
 
-      if (!minDate && !maxDate && !minTime && !maxTime) {
+      if (!hasDateLimits && !hasTimeLimits) {
         return { date: dateValue, time: timeValue };
       }
 
@@ -411,34 +494,14 @@ export default {
 
       let clampedDatetime = datetime;
 
-      if (minDate || minTime) {
-        const minDateObj = minDate
-          ? (typeof minDate === 'string' ? parseISO(minDate) : new Date(minDate))
-          : parsedDate;
-
-        if (minTime) {
-          const [minHours, minMinutes] = minTime.split(':').map(Number);
-          minDateObj.setHours(minHours, minMinutes, 0, 0);
-        } else {
-          minDateObj.setHours(0, 0, 0, 0);
-        }
-
-        clampedDatetime = max([clampedDatetime, minDateObj]);
+      const minBoundary = this.createBoundaryDateTime('min', parsedDate);
+      if (minBoundary) {
+        clampedDatetime = max([clampedDatetime, minBoundary]);
       }
 
-      if (maxDate || maxTime) {
-        const maxDateObj = maxDate
-          ? (typeof maxDate === 'string' ? parseISO(maxDate) : new Date(maxDate))
-          : parsedDate;
-
-        if (maxTime) {
-          const [maxHours, maxMinutes] = maxTime.split(':').map(Number);
-          maxDateObj.setHours(maxHours, maxMinutes, 0, 0);
-        } else {
-          maxDateObj.setHours(23, 59, 59, 999);
-        }
-
-        clampedDatetime = min([clampedDatetime, maxDateObj]);
+      const maxBoundary = this.createBoundaryDateTime('max', parsedDate);
+      if (maxBoundary) {
+        clampedDatetime = min([clampedDatetime, maxBoundary]);
       }
 
       return {
@@ -501,11 +564,9 @@ export default {
     },
     onBlur(e) {
       if (
-        this.$el.contains(e.relatedTarget)
-        && (
-          (this.date.textField && !this.time.textField)
-          || (this.time.textField && !this.date.textField)
-        )
+        this.$el.contains(e.relatedTarget) &&
+        ((this.date.textField && !this.time.textField) ||
+          (this.time.textField && !this.date.textField))
       ) {
         return;
       }
